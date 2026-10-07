@@ -1,21 +1,23 @@
-import requests
+import allure
 
-from url import BASE_URL
+from api_requests import register_user, login_user
 from user_generator import generate_user
 
 class TestLogin:
+    @allure.title('Вход под существующим пользователем')
     def test_login_existing_user_returns_success(self):
         payload = generate_user()
 
-        requests.post(f"{BASE_URL}/auth/register", data=payload)
-        response = requests.post(f"{BASE_URL}/auth/login", data=payload)
+        register_user(payload)
+        response = login_user(payload)
 
         assert response.status_code == 200
         assert response.json()["success"] is True
 
+    @allure.title('Вход с неверным логином и паролем')
     def test_login_wrong_credentials_returns_error(self):
         payload = generate_user()
 
-        response = requests.post(f"{BASE_URL}/auth/login", data=payload)
+        response = login_user(payload)
         assert response.status_code == 401
         assert response.json()["message"] == "email or password are incorrect"
