@@ -20,3 +20,11 @@ class TestOrder:
 
         assert order_response.status_code == 200
         assert order_response.json()['success'] is True
+
+    def test_order_creation_without_authorization_returns_success(self):
+        ingredient_ids = get_ingredient_ids()
+        order_payload = {'ingredients': ingredient_ids}
+        order_response = requests.post(f'{BASE_URL}/orders', json=order_payload)
+
+        assert order_response.status_code == 200
+        assert order_response.json()['success'] is True
