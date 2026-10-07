@@ -28,3 +28,13 @@ class TestOrder:
 
         assert order_response.status_code == 200
         assert order_response.json()['success'] is True
+
+    def test_create_order_without_ingredients_returns_error(self):
+        order_payload = {'ingredients': []}
+
+        order_response = requests.post(f'{BASE_URL}/orders', json=order_payload)
+
+        assert order_response.status_code == 400
+        assert order_response.json()['message'] == 'Ingredient ids must be provided'
+
+
