@@ -1,6 +1,6 @@
 import requests
 
-from url import BASE_URL
+from url import BASE_URL, TIMEOUT
 
 def get_ingredient_ids():
     response = requests.get(f'{BASE_URL}/ingredients/')
