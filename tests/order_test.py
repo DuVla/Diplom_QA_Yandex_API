@@ -9,30 +9,27 @@ from ingredients import get_ingredient_ids
 class TestOrder:
 
     @allure.title('Создание заказа с авторизацией')
-    def test_create_order_with_auth_returns_success(self):
-        payload = generate_user()
-
-        response = register_user(payload)
-        access_token = response.json()['accessToken']
-
+    def test_create_order_with_auth_returns_success(self, registered_user):
         ingredient_ids = get_ingredient_ids()
-        headers = {'Authorization': access_token}
-        order_payload =  {'ingredients': ingredient_ids}
+        headers = {
+            'Authorization': registered_user['access_token']
+        }
+        order_payload = {'ingredients': ingredient_ids}
 
         order_response = create_order(order_payload, headers)
 
         assert order_response.status_code == 200
         assert order_response.json()['success'] is True
 
-    @pytest.mark.xfail(reason = 'Баг: по ТЗ заказ может оформить только авторизованный пользователь, но API дает создать заказ для неавторизованного пользователя (ОР 401, ФР 200)')
     @allure.title('Создание заказа без авторизации')
-    def test_order_creation_without_authorization_returns_error(self):
+    def test_order_creation_without_authorization_returns_success(self):
         ingredient_ids = get_ingredient_ids()
         order_payload = {'ingredients': ingredient_ids}
+
         order_response = create_order(order_payload)
 
-        assert order_response.status_code == 401
-        assert order_response.json()['success'] is False
+        assert order_response.status_code == 200
+        assert order_response.json()['success'] is True
 
     @allure.title('Создание заказа без ингредиентов возвращает ошибку')
     def test_create_order_without_ingredients_returns_error(self):

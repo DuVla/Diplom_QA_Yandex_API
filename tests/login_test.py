@@ -1,15 +1,12 @@
 import allure
 
-from api_requests import register_user, login_user
+from api_requests import login_user
 from user_generator import generate_user
 
 class TestLogin:
     @allure.title('Вход под существующим пользователем')
-    def test_login_existing_user_returns_success(self):
-        payload = generate_user()
-
-        register_user(payload)
-        response = login_user(payload)
+    def test_login_existing_user_returns_success(self, registered_user):
+        response = login_user(registered_user['payload'])
 
         assert response.status_code == 200
         assert response.json()["success"] is True
