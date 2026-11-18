@@ -1,8 +1,6 @@
 import allure
-import pytest
 
-from api_requests import login_user, create_order, register_user
-from user_generator import generate_user
+from api_requests import create_order
 from ingredients import get_ingredient_ids
 
 
@@ -40,12 +38,14 @@ class TestOrder:
         assert order_response.status_code == 400
         assert order_response.json()['message'] == 'Ingredient ids must be provided'
 
-    @allure.title('Создание заказа с некорректным хешем ингредиента ')
+    @allure.title('Создание заказа с некорректным хешем ингредиента')
     def test_create_order_with_invalid_ingredients_hash_return_error(self):
         order_payload = {'ingredients': ['invalid_hash_123']}
         order_response = create_order(order_payload)
 
         assert order_response.status_code == 500
+        assert order_response.headers.get('Content-Type', '').startswith('text/html')
+        assert 'Internal Server Error' in order_response.text
 
     @allure.title('Создание заказа с ингредиентами')
     def test_create_order_with_ingredients_returns_success(self):
